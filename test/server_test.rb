@@ -27,7 +27,7 @@ class ServerTest < Minitest::Test
 
   def test_it_runs_word_seach_when_passed_path_and_params
     response = Faraday.get('http://localhost:9292/wordsearch?word=why')
-    assert response.body.include?("Word is a known word")
+    assert response.body.include?("WHY is a known word")
   end
 
 end

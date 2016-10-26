@@ -25,7 +25,7 @@ class Server
       output = response.determine_output_from_path
       client.puts response.write_header(output)
       client.puts output
-      shutdown?
+      shutdown?(client)
     end
   end
 
@@ -46,7 +46,7 @@ class Server
     end
   end
 
-  def shutdown?
+  def shutdown?(client)
     if parser.diagnostics["Path"] == "/shutdown" || request_counter == 12
       tcp_server.close
     else

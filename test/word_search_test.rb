@@ -15,11 +15,18 @@ class WordSearchTest < MiniTest::Test
     assert_equal 'why', search.word
   end
 
-  def test_it_can_access_dictionary
+  def test_it_can_confirm_a_word_is_in_dictionary
     search.pull_word('/wordsearch?word=why')
     result = search.search_in_dictionary
 
     assert_equal true, result
+  end
+
+  def test_it_can_know_when_a_word_is_not_in_dictionary
+    search.pull_word('/wordsearch?word=iqyt')
+    result = search.search_in_dictionary
+
+    assert_equal false, result
   end
 
   def test_it_can_send_correct_response_if_it_finds_right_word
