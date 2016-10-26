@@ -1,17 +1,19 @@
 class Response
 
-  attr_reader :path, :diagnostics, :header, :output
+  attr_reader :path, :diagnostics, :header, :output, :hellos, :requests
 
-  def initialize(diagnostics, path)
+  def initialize(diagnostics, path, hellos, requests)
     @diagnostics = diagnostics
     @path = path
+    @hellos = hellos
+    @requests = requests
     @header = nil
     @output = nil
   end
 
   def write_output(path_file)
-    response = "<pre>" + "#{diagnostics.each {|line| }}" + "</pre>"
-    output = "<html><head></head><body>#{response}<h1>#{path_file}</h1></body></html>"
+    response = "#{diagnostics.join("<br>")}"
+    output = "<html><head></head><body><p>#{response}<br>Number of Requests:#{requests}</p><h1>#{path_file}</h1></body></html>"
   end
 
   def write_header(output)
@@ -27,7 +29,7 @@ class Response
       when '/'
         output = write_output("")
       when '/hello'
-        output = write_output("Hello, World")
+        output = write_output("Hello, World (#{hellos})")
       when '/datetime'
         output = write_output("#{Time.now.strftime('%l:%M%p')} on #{Time.now.strftime('%A, %B %d, %Y')}")
       when '/shutdown'
