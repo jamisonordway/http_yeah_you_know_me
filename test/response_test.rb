@@ -4,10 +4,15 @@ require './lib/response.rb'
 
 class ResponseTest < Minitest::Test
 
-  attr_reader :path_root, :diagnostics_lines, :header_when_root
+  attr_reader :path_root, :path_hello, :path_datetime, :path_shutdown, :path_word_search, :diagnostics_lines, :header_when_root, :requests
 
   def setup
     @path_root = "/"
+    @path_hello = "/hello"
+    @path_datetime = "/datetime"
+    @path_shutdown = "/shutdown"
+    @path_word_search = "/wordsearch?word=why"
+    @requests = 0
     @diagnostics_lines = ["Verb: GET",
                                 "Path: /",
                                 "Protocol: HTTP/1.1",
@@ -23,43 +28,57 @@ class ResponseTest < Minitest::Test
                 "date: #{Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')}",
                 "server: ruby",
                 "content-type: text/html; charset=iso-8859-1",
-                "content-length: 473\r\n\r\n"].join("\r\n")
+                "content-length: 489\r\n\r\n"].join("\r\n")
   end
 
   def test_it_takes_in_path
-    response = Response.new(diagnostics_lines, path_root)
+    response = Response.new(diagnostics_lines, path_root, 0, 0)
     result = response.path
 
     assert_equal '/', result
   end
 
   def test_it_can_write_correct_ouput_given_root_path_file
-    response = Response.new(diagnostics_lines, path_root)
+    response = Response.new(diagnostics_lines, path_root, 0, 0)
     result = response.write_output("")
 
-    assert_equal "<html><head></head><body><pre>#{diagnostics_lines}</pre><h1>""</h1></body></html>", result
+    assert_equal "<html><head></head><body><p>#{diagnostics_lines.join("<br>")}<br>Number of Requests:#{requests}</p><h1>""</h1></body></html>", result
   end
 
   def test_it_can_write_correct_response_given_hello_path_file
-    response = Response.new(diagnostics_lines, path_root)
+    response = Response.new(diagnostics_lines, path_root, 0, 0)
     result = response.write_output("Hello, World")
 
-    assert_equal "<html><head></head><body><pre>#{diagnostics_lines}</pre><h1>Hello, World</h1></body></html>", result
+    assert_equal "<html><head></head><body><p>#{diagnostics_lines.join("<br>")}<br>Number of Requests:#{requests}</p><h1>Hello, World</h1></body></html>", result
   end
 
   def test_it_can_write_correct_response_given_datetime_path_file
-    response = Response.new(diagnostics_lines, path_root)
+    response = Response.new(diagnostics_lines, path_root, 0, 0)
     result = response.write_output("12:59PM on Wendesday, Oct 26")
 
-    assert_equal "<html><head></head><body><pre>#{diagnostics_lines}</pre><h1>12:59PM on Wendesday, Oct 26</h1></body></html>", result
+    assert_equal "<html><head></head><body><p>#{diagnostics_lines.join("<br>")}<br>Number of Requests:#{requests}</p><h1>12:59PM on Wendesday, Oct 26</h1></body></html>", result
   end
 
-  def test_it_can_dertmine_what_to_output_given_path
-    response = Response.new(diagnostics_lines, path_root)
-    result = response.determine_path
+
+  def test_it_can_write_correct_response_given_datetime_path
+    response = Response.new(diagnostics_lines, path_datetime, 0, 0)
+    result = response.determine_output_from_path
+
+    assert result.include?('2016')
+  end
+
+  def test_it_can_determine_what_to_output_given_path
+    response = Response.new(diagnostics_lines, path_root, 0, 0)
+    output = response.determine_output_from_path
+    result = response.write_header(output)
 
     assert_equal header_when_root, result
   end
 
-  def test_it_can
+  def test_it_can_access_word_search_with_given_path
+    response = Response.new(diagnostics_lines, path_word_search, 0, 0)
+    result = response.determine_output_from_path
+
+    assert_equal "<html><head></head><body><p>#{diagnostics_lines.join("<br>")}<br>Number of Requests:#{requests}</p><h1>WHY is a known word</h1></body></html>", result
+  end
 end

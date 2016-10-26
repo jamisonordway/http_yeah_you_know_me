@@ -27,7 +27,7 @@ class Response
   end
 
   def determine_output_from_path
-    case path
+    case path.split('?')[0]
       when '/'
         output = write_output("")
       when '/hello'
@@ -36,10 +36,9 @@ class Response
         output = write_output("#{Time.now.strftime('%l:%M%p')} on #{Time.now.strftime('%A, %B %d, %Y')}")
       when '/shutdown'
         output = write_output("Total Number of Requests #{requests}")
-      when includes?('/wordsearch?word=')
-        search = WordSearch.new(path)
-        search.find_word(path)
-        if search == true
+      when '/wordsearch'
+        found = WordSearch.new.find_word(path)
+        output = write_output(found)
       else
         output = write_output("Not a valid path")
     end
