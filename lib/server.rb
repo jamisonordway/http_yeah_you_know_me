@@ -25,13 +25,18 @@ class Server
 
   def start
     while 
-      client = @tcp_server.accept
+      client = tcp_server.accept
       @hello_counter += 1
       diagnostics_list = pull_request_lines(client)
       response = Response.new(diagnostics_list, parser.diagnostics['Path'])
-      client.puts response.header
-      client.puts response.output
-      client.close
+      output = response.determine_output_from_path
+      client.puts response.write_header(output)
+      client.puts output
+      if parser.diagnostics["Path"] == "/shutdown"
+        tcp_server.close
+      else
+        client.close
+      end
     end
   end
 

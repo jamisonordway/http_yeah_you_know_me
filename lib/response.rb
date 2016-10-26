@@ -10,7 +10,7 @@ class Response
   end
 
   def write_output(path_file)
-    response = "<pre>" + "#{diagnostics}" + "</pre>"
+    response = "<pre>" + "#{diagnostics.each {|line| }}" + "</pre>"
     output = "<html><head></head><body>#{response}<h1>#{path_file}</h1></body></html>"
   end
 
@@ -22,18 +22,18 @@ class Response
                 "content-length: #{output.length}\r\n\r\n"].join("\r\n")
   end
 
-  def determine_path
+  def determine_output_from_path
     case path
       when '/'
         output = write_output("")
-        header = write_header(output)
       when '/hello'
         output = write_output("Hello, World")
-        header = write_header(output)
       when '/datetime'
-        output = write_output("")
-        header = write_header(output)
+        output = write_output("#{Time.now.strftime('%l:%M%p')} on #{Time.now.strftime('%A, %B %d, %Y')}")
       when '/shutdown'
+        output = write_output("Shutting Down")
+      else
+        output = write_output("Not a valid path")
     end
   end
 

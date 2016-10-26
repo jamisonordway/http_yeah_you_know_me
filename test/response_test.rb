@@ -4,7 +4,7 @@ require './lib/response.rb'
 
 class ResponseTest < Minitest::Test
 
-  attr_reader :path_root, :diagnostics_lines
+  attr_reader :path_root, :diagnostics_lines, :header_when_root
 
   def setup
     @path_root = "/"
@@ -19,6 +19,11 @@ class ResponseTest < Minitest::Test
                                 "Accept: */*",
                                 "Accept-Encoding: gzip, deflate, sdch",
                                 "Accept-Language: en-US,en;q=0.8,fr;q=0.6"]
+    @header_when_root = ["http/1.1 200 ok",
+                "date: #{Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')}",
+                "server: ruby",
+                "content-type: text/html; charset=iso-8859-1",
+                "content-length: 473\r\n\r\n"].join("\r\n")
   end
 
   def test_it_takes_in_path
@@ -44,8 +49,15 @@ class ResponseTest < Minitest::Test
 
   def test_it_can_write_correct_response_given_datetime_path_file
     response = Response.new(diagnostics_lines, path_root)
-    result = response.write_output("Hello, World")
+    result = response.write_output("12:59PM on Wendesday, Oct 26")
 
-    assert_equal "<html><head></head><body><pre>#{diagnostics_lines}</pre><h1>Hello, World</h1></body></html>", result
+    assert_equal "<html><head></head><body><pre>#{diagnostics_lines}</pre><h1>12:59PM on Wendesday, Oct 26</h1></body></html>", result
+  end
+
+  def test_it_can_dertmine_what_to_output_given_path
+    response = Response.new(diagnostics_lines, path_root)
+    result = response.determine_path
+
+    assert_equal header_when_root, result
   end
 end
