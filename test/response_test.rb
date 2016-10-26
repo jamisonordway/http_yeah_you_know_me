@@ -60,4 +60,6 @@ class ResponseTest < Minitest::Test
 
     assert_equal header_when_root, result
   end
+
+  def test_it_can
 end

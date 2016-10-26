@@ -16,14 +16,6 @@ class Server
     @request_counter = 0
   end
 
-  def pull_request_lines(client)
-    request_lines = []
-    while line = client.gets and !line.chomp.empty?
-      request_lines << line.chomp
-    end
-    parser.format_request_lines(request_lines)
-  end
-
   def start
     while 
       client = tcp_server.accept
@@ -33,12 +25,16 @@ class Server
       output = response.determine_output_from_path
       client.puts response.write_header(output)
       client.puts output
-      if parser.diagnostics["Path"] == "/shutdown" || request_counter == 12
-        tcp_server.close
-      else
-        client.close
-      end
+      shutdown?
     end
+  end
+
+  def pull_request_lines(client)
+    request_lines = []
+    while line = client.gets and !line.chomp.empty?
+      request_lines << line.chomp
+    end
+    parser.format_request_lines(request_lines)
   end
 
   def add_to_counters
@@ -49,6 +45,15 @@ class Server
       @request_counter += 1
     end
   end
+
+  def shutdown?
+    if parser.diagnostics["Path"] == "/shutdown" || request_counter == 12
+      tcp_server.close
+    else
+      client.close
+    end
+  end
+
 
 end
 

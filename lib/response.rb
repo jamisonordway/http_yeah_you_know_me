@@ -1,3 +1,5 @@
+require './lib/word_search'
+
 class Response
 
   attr_reader :path, :diagnostics, :header, :output, :hellos, :requests
@@ -33,7 +35,11 @@ class Response
       when '/datetime'
         output = write_output("#{Time.now.strftime('%l:%M%p')} on #{Time.now.strftime('%A, %B %d, %Y')}")
       when '/shutdown'
-        output = write_output("Shutting Down")
+        output = write_output("Total Number of Requests #{requests}")
+      when includes?('/wordsearch?word=')
+        search = WordSearch.new(path)
+        search.find_word(path)
+        if search == true
       else
         output = write_output("Not a valid path")
     end
