@@ -15,7 +15,7 @@ class Game
   end
 
   def guess_compare
-    case number <=> guess
+    case guess <=> number
       when 1
         "too high."
       when -1
