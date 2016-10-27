@@ -1,4 +1,4 @@
-require 'pry'
+require 'socket'
 
 class Parser
 
@@ -9,6 +9,7 @@ class Parser
                     "Path" => nil,
                     "Protocol" => nil
                     }
+    @content = nil
   end
   
 

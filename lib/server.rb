@@ -39,7 +39,7 @@ class Server
     end
     parser.format_request_lines(request_lines)
   end
-
+  
   def path
     parser.diagnostics["Path"]
   end
@@ -62,12 +62,17 @@ class Server
   end
 
   def game_guess(diagnostics_list, client)
-    if path.split('?')[0] == "/game" && verb == "POST"
-      line = diagnostics_list.find {|line| line.include?("Content-Length:")}
-      number = line.split(':')[-1]
-      game.guesser(number)
+    if path == "/game" && verb == "POST"
+      length = get_content_length(diagnostics_list)
+      number = client.read(length) 
+      game.guesser(number.to_i)
       redirect(client)
     end
+  end
+
+  def get_content_length(diagnostics_list)
+    content_length = diagnostics_list.find {|line| line.include?('Content-Length')}
+    content_length.split(':')[-1].to_i
   end
 
   def redirect(client)
