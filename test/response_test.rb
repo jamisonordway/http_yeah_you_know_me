@@ -4,15 +4,10 @@ require './lib/response.rb'
 
 class ResponseTest < Minitest::Test
 
-  attr_reader :path_root, :path_hello, :path_datetime, :path_shutdown, :path_word_search_true, :path_word_search_false, :diagnostics_lines, :header_when_root, :requests
+  attr_reader :path_root, :diagnostics_lines, :header_when_root, :requests
 
   def setup
     @path_root = "/"
-    @path_hello = "/hello"
-    @path_datetime = "/datetime"
-    @path_shutdown = "/shutdown"
-    @path_word_search_true = "/wordsearch?word=why"
-    @path_word_search_false = "/wordsearch?word=iqyt"
     @requests = 0
     @diagnostics_lines = ["Verb: GET",
                                 "Path: /",
@@ -47,7 +42,7 @@ class ResponseTest < Minitest::Test
   end
 
   def test_it_can_write_correct_response_given_hello_path_file
-    response = Response.new(diagnostics_lines, path_root, 0, 0)
+    response = Response.new(diagnostics_lines, '/hello', 0, 0)
     result = response.write_output("Hello, World")
 
     assert_equal "<html><head></head><body><p>#{diagnostics_lines.join("<br>")}<br>Number of Requests:#{requests}</p><h1>Hello, World</h1></body></html>", result
@@ -62,7 +57,7 @@ class ResponseTest < Minitest::Test
 
 
   def test_it_can_write_correct_response_given_datetime_path
-    response = Response.new(diagnostics_lines, path_datetime, 0, 0)
+    response = Response.new(diagnostics_lines, "/datetime", 0, 0)
     result = response.determine_output_from_path
 
     assert result.include?('2016')
@@ -77,17 +72,24 @@ class ResponseTest < Minitest::Test
   end
 
   def test_it_can_access_word_search_with_given_path
-    response = Response.new(diagnostics_lines, path_word_search_true, 0, 0)
+    response = Response.new(diagnostics_lines, "/wordsearch?word=why", 0, 0)
     result = response.determine_output_from_path
 
     assert_equal "<html><head></head><body><p>#{diagnostics_lines.join("<br>")}<br>Number of Requests:#{requests}</p><h1>WHY is a known word</h1></body></html>", result
   end
 
   def test_it_returns_correct_response_when_word_is_not_in_dictionary
-    response = Response.new(diagnostics_lines, path_word_search_false, 0, 0)
+    response = Response.new(diagnostics_lines, "/wordsearch?word=iqyt", 0, 0)
     result = response.determine_output_from_path
 
     assert_equal "<html><head></head><body><p>#{diagnostics_lines.join("<br>")}<br>Number of Requests:#{requests}</p><h1>IQYT is not a known word</h1></body></html>", result
   end
 
+  def test_it_wishes_player_luck_when_game_is_started
+    response = Response.new(diagnostics_lines, '/start_game', 0, 0)
+    result = response.determine_output_from_path
+
+    assert_equal "<html><head></head><body><p>#{diagnostics_lines.join("<br>")}<br>Number of Requests:#{requests}</p><h1>Good Luck!</h1></body></html>", result
+  end
+  
 end

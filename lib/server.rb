@@ -24,6 +24,7 @@ class Server
       response = Response.new(diagnostics_list, parser.diagnostics['Path'], hello_counter, request_counter)
       output = response.determine_output_from_path
       client.puts response.write_header(output)
+      game_guess(response) if response.game 
       client.puts output
       shutdown?(client)
     end
@@ -43,6 +44,12 @@ class Server
       @request_counter += 1
     else
       @request_counter += 1
+    end
+  end
+
+  def game_guess(response)
+    if parser.diagnostics["Verb"] == "POST"
+      response.read_guess
     end
   end
 

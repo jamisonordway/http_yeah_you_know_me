@@ -1,16 +1,16 @@
+require 'socket'
 require './lib/word_search'
+require './lib/game'
 
 class Response
 
-  attr_reader :path, :diagnostics, :header, :output, :hellos, :requests
+  attr_reader :path, :diagnostics, :header, :output, :hellos, :requests, :game
 
   def initialize(diagnostics, path, hellos, requests)
     @diagnostics = diagnostics
     @path = path
     @hellos = hellos
     @requests = requests
-    @header = nil
-    @output = nil
   end
 
   def write_output(path_file)
@@ -39,9 +39,16 @@ class Response
       when '/wordsearch'
         found = WordSearch.new.find_word(path)
         output = write_output(found)
+      when '/start_game'
+        @game = Game.new
+        output = write_output("Good Luck!")
+      when '/game'
+        output = write_output(game.response)
       else
         output = write_output("Not a valid path.")
     end
   end
+
+  def read_guess
 
 end
