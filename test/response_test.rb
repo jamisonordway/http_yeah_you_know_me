@@ -91,5 +91,10 @@ class ResponseTest < Minitest::Test
 
     assert_equal "<html><head></head><body><p>#{diagnostics_lines.join("<br>")}<br>Number of Requests:#{requests}</p><h1>Good Luck!</h1></body></html>", result
   end
-  
+
+  def test_it_can_read_guess_from_parameters
+    response = Response.new(diagnostics_lines, '/game?guess=2', 0, 0)
+
+    
+  end
 end

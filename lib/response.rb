@@ -4,7 +4,7 @@ require './lib/game'
 
 class Response
 
-  attr_reader :path, :diagnostics, :header, :output, :hellos, :requests, :game
+  attr_reader :path, :diagnostics, :header, :output, :hellos, :requests
 
   def initialize(diagnostics, path, hellos, requests)
     @diagnostics = diagnostics
@@ -40,15 +40,12 @@ class Response
         found = WordSearch.new.find_word(path)
         output = write_output(found)
       when '/start_game'
-        @game = Game.new
         output = write_output("Good Luck!")
       when '/game'
-        output = write_output(game.response)
+        output = write_output("Playing Number Guesser")
       else
         output = write_output("Not a valid path.")
     end
   end
-
-  def read_guess
 
 end

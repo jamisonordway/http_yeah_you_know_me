@@ -30,6 +30,26 @@ class ServerTest < Minitest::Test
     assert response.body.include?("WHY is a known word")
   end
 
+  def test_it_can_start_a_game_given_correct_path
+    response = Faraday.get('http://localhost:9292/start_game')
+
+    assert response.body.include?("Good Luck!")
+  end
+
+  def it_can_return_guess_response
+    Faraday.get('http://localhost:9292/start_game')
+    response = response = Faraday.guess('http://localhost:9292/game?guess=42')
+
+    assert response.body.include?("Number of guesses") 
+  end
+
+  def test_it_can_redirect_given_a_guess
+    Faraday.get('http://localhost:9292/start_game')
+    response = Faraday.post('http://localhost:9292/game?guess=42')
+
+    assert response.body.include?("Number of guesses")
+  end
+
 end
 
 

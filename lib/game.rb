@@ -1,6 +1,7 @@
 class Game
 
-  attr_reader :number, :guess_count, :guess
+  attr_reader :number, :guess
+  attr_accessor :guess_count
 
   def initialize
     @guess = nil
@@ -8,12 +9,13 @@ class Game
     @guess_count = 0
   end
 
-  def response
-    "Number of guesses: #{guess_count}. <br>Guess was #{guess_compare}"
+  def write_response(requests)
+    response = "Number of guesses: #{guess_count} <br>Guess:#{guess}<br>Guess was #{guess_compare}"
+    "<html><head></head><body>Number of Requests:#{requests}</p><h1>#{response}</h1></body></html>"
   end
 
   def guess_compare
-    case guess <=> number
+    case number <=> guess
       when 1
         "too high."
       when -1

@@ -6,7 +6,7 @@ require './lib/response'
 
 class Server
 
-  attr_reader :tcp_server, :parser
+  attr_reader :tcp_server, :parser, :game
   attr_accessor :hello_counter, :request_counter
 
   def initialize
@@ -21,10 +21,12 @@ class Server
       client = tcp_server.accept
       diagnostics_list = pull_request_lines(client)
       add_to_counters
-      response = Response.new(diagnostics_list, parser.diagnostics['Path'], hello_counter, request_counter)
-      output = response.determine_output_from_path
+      response = Response.new(diagnostics_list, path, hello_counter, request_counter)
+      game_starter
+      output = response.determine_output_from_path 
+      game_guess(diagnostics_list, client) if game 
+      output = game.write_response(request_counter) if path == "/game"
       client.puts response.write_header(output)
-      game_guess(response) if response.game 
       client.puts output
       shutdown?(client)
     end
@@ -38,8 +40,16 @@ class Server
     parser.format_request_lines(request_lines)
   end
 
+  def path
+    parser.diagnostics["Path"]
+  end
+
+  def verb
+    parser.diagnostics["Verb"]
+  end
+
   def add_to_counters
-    if parser.diagnostics["Path"] == "/hello"
+    if path == "/hello"
       @hello_counter += 1
       @request_counter += 1
     else
@@ -47,14 +57,30 @@ class Server
     end
   end
 
-  def game_guess(response)
-    if parser.diagnostics["Verb"] == "POST"
-      response.read_guess
+  def game_starter
+    @game = Game.new if path == "/start_game"
+  end
+
+  def game_guess(diagnostics_list, client)
+    if path.split('?')[0] == "/game" && verb == "POST"
+      line = diagnostics_list.find {|line| line.include?("Content-Length:")}
+      number = line.split(':')[-1]
+      game.guesser(number)
+      redirect(client)
     end
   end
 
+  def redirect(client)
+    header = ['HTTP/1.1 301 Moved Permanently',
+              'location: http://localhost:9292/game',
+              "date: #{Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')}",
+              "server: ruby",
+              "content-type: text/html; charset=iso-8859-1\r\n\r\n"].join("\r\n")
+    client.puts header 
+  end
+
   def shutdown?(client)
-    if parser.diagnostics["Path"] == "/shutdown" || request_counter == 12
+    if path == "/shutdown" || request_counter == 12
       tcp_server.close
     else
       client.close
