@@ -40,7 +40,7 @@ class Response
         found = WordSearch.new.find_word(path)
         output = write_output(found)
       else
-        output = write_output("Not a valid path")
+        output = write_output("Not a valid path.")
     end
   end
 
