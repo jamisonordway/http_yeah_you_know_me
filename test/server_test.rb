@@ -45,7 +45,7 @@ class ServerTest < Minitest::Test
 
   def test_it_can_redirect_given_a_guess
     Faraday.get('http://localhost:9292/start_game')
-    response = Faraday.post('http://localhost:9292/game?guess=42')
+    response = Faraday.post('http://localhost:9292/game')
 
     assert response.body.include?("Number of guesses")
   end
