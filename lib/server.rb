@@ -65,7 +65,7 @@ class Server
     if path == "/game" && verb == "POST"
       length = get_content_length(diagnostics_list)
       number = client.read(length) 
-      game.guesser(number.to_i)
+      game.guesser(number.split(/=/)[-1].to_i)
       redirect(client)
     end
   end
