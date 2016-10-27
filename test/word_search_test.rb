@@ -1,5 +1,4 @@
-require 'minitest/pride'
-require 'minitest/autorun'
+require './test/test_helper'
 require './lib/word_search'
 
 class WordSearchTest < MiniTest::Test

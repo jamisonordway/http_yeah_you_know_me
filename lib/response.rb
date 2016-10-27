@@ -1,4 +1,4 @@
-require 'socket'
+require './test/test_helper'
 require './lib/word_search'
 require './lib/game'
 
@@ -29,22 +29,22 @@ class Response
   def determine_output_from_path
     case path.split('?')[0]
       when '/'
-        output = write_output("")
+        write_output("")
       when '/hello'
-        output = write_output("Hello, World (#{hellos})")
+        write_output("Hello, World (#{hellos})")
       when '/datetime'
-        output = write_output("#{Time.now.strftime('%l:%M%p')} on #{Time.now.strftime('%A, %B %d, %Y')}")
+        write_output("#{Time.now.strftime('%l:%M%p')} on #{Time.now.strftime('%A, %B %d, %Y')}")
       when '/shutdown'
-        output = write_output("Total Number of Requests #{requests}")
+        write_output("Total Number of Requests #{requests}")
       when '/wordsearch'
         found = WordSearch.new.find_word(path)
-        output = write_output(found)
+        write_output(found)
       when '/start_game'
-        output = write_output("Good Luck!")
+        write_output("Good Luck!")
       when '/game'
-        output = write_output("Playing Number Guesser")
+        write_output("Playing Number Guesser")
       else
-        output = write_output("Not a valid path.")
+        write_output("Not a valid path.")
     end
   end
 

@@ -17,7 +17,7 @@ class Server
   end
 
   def start
-    while 
+    loop do
       client = tcp_server.accept
       diagnostics_list = pull_request_lines(client)
       add_to_counters
@@ -75,10 +75,14 @@ class Server
     content_length.split(':')[-1].to_i
   end
 
+  def request_timestamp
+    Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')
+  end
+
   def redirect(client)
     header = ['HTTP/1.1 301 Moved Permanently',
               'location: http://localhost:9292/game',
-              "date: #{Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')}",
+              "date: #{request_timestamp}",
               "server: ruby",
               "content-type: text/html; charset=iso-8859-1\r\n\r\n"].join("\r\n")
     client.puts header 

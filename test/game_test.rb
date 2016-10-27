@@ -1,5 +1,4 @@
-require 'minitest/pride'
-require 'minitest/autorun'
+require './test/test_helper'
 require './lib/game'
 
 class GameTest < Minitest::Test
@@ -34,8 +33,8 @@ class GameTest < Minitest::Test
 
   def test_it_returns_response
     game.guesser(42)
-    
-    assert game.response.include?("Number of guesses: 1. <br>Guess was")
+
+    assert game.write_response(1).include?("1")
   end
 
 end

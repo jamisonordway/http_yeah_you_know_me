@@ -1,6 +1,5 @@
+require './test/test_helper'
 require 'faraday'
-require 'minitest/pride'
-require 'minitest/autorun'
 require './lib/server'
 
 class ServerTest < Minitest::Test
